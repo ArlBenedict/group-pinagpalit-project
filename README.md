@@ -1,5 +1,4 @@
 # Group Name: Pinagpalit 
-# Project Description: 
 
 ## 👥 Group Members
 
