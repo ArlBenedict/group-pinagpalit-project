@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Minimal dumbbell silhouette for subtle background -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800">
+  <g fill="#ffffff" fill-opacity="0.03" stroke="#ffffff" stroke-opacity="0.02">
+    <!-- left weight -->
+    <rect x="60" y="300" width="120" height="200" rx="10" />
+    <rect x="190" y="340" width="320" height="120" rx="8" />
+    <rect x="510" y="300" width="120" height="200" rx="10" />
+
+    <!-- right weight mirrored further -->
+    <rect x="860" y="300" width="120" height="200" rx="10" />
+    <rect x="640" y="340" width="320" height="120" rx="8" />
+    <rect x="730" y="300" width="120" height="200" rx="10" />
+
+    <!-- shaft -->
+    <rect x="300" y="360" width="600" height="80" rx="8" />
+  </g>
+</svg>
