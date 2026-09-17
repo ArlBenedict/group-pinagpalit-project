@@ -1,38 +1,46 @@
 <template>
   <AppLayout>
-    <div>
-      <div class="topbar"><h2 style="margin:0">My Attendance</h2></div>
-
-      <div class="card">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-          <div>
-            <h3>Attendance Summary</h3>
-            <div class="muted">Total visits this month: <strong>{{ summary.month }}</strong></div>
-          </div>
-          <div>
-            <button class="btn" @click="checkIn">Check-in</button>
-            <button class="btn ghost" @click="checkOut">Check-out</button>
+    <main class="user-page detail-page">
+      <UserPageHeader
+        eyebrow="MEMBER SPACE / 02"
+        title="Your attendance"
+        description="A clear record of the sessions that keep you moving forward."
+        ><div class="action-pair">
+          <button class="btn" @click="checkIn">Check-in</button
+          ><button class="btn ghost" @click="checkOut">Check-out</button>
+        </div></UserPageHeader
+      >
+      <section class="attendance-summary">
+        <div>
+          <div class="section-label">THIS MONTH</div>
+          <strong>{{ summary.month }}</strong
+          ><span>VISITS</span>
+        </div>
+        <div class="attendance-note">Every check-in counts. Keep building your rhythm.</div>
+      </section>
+      <section class="card detail-panel">
+        <div class="section-label">HISTORY</div>
+        <h3>Session history</h3>
+        <div v-if="records.length" class="attendance-list">
+          <div v-for="record in records" :key="record.id" class="attendance-row">
+            <span class="attendance-date">{{ record.date }}</span
+            ><strong>{{ record.checkIn }}</strong
+            ><span>{{ record.checkOut || 'Still training' }}</span
+            ><span class="status-pill">{{ record.status }}</span>
           </div>
         </div>
-
-        <table class="table">
-          <thead><tr><th>Date</th><th>Check-in</th><th>Check-out</th><th>Status</th></tr></thead>
-          <tbody>
-            <tr v-for="r in records" :key="r.id">
-              <td>{{ r.date }}</td>
-              <td>{{ r.checkIn }}</td>
-              <td>{{ r.checkOut || '-' }}</td>
-              <td>{{ r.status }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
+        <div v-else class="premium-empty">
+          <h3>Your first session is waiting.</h3>
+          <p class="section-copy">Use Check-in when you arrive at the gym.</p>
+        </div>
+      </section>
+    </main>
   </AppLayout>
 </template>
 
 <script setup>
 import AppLayout from '../components/AppLayout.vue'
+import UserPageHeader from '../components/UserPageHeader.vue'
 import { computed, ref } from 'vue'
 import { useAuthStore } from '../stores/auth'
 import { getUserRecords, getCurrentUserId, saveRecord } from '../stores/mockData'
@@ -70,7 +78,7 @@ function checkIn() {
 
 function checkOut() {
   if (!records.value.length) return
-  const active = records.value.find(r => !r.checkOut)
+  const active = records.value.find((r) => !r.checkOut)
   if (!active) return
   active.checkOut = nowTime()
   saveRecord('attendance', active)

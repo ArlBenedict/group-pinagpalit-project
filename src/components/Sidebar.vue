@@ -1,7 +1,10 @@
 <template>
-  <aside class="sidebar">
-    <div class="logo">FitHit</div>
-    <nav>
+  <aside class="sidebar" :class="{ 'dashboard-nav-hidden': dashboardMode && isHidden }">
+    <div class="sidebar-brand-row">
+      <div class="logo">FitHit</div>
+    </div>
+    <div v-if="!isAdmin" class="sidebar-member">MEMBER SPACE</div>
+    <nav :class="{ 'is-open': isOpen }">
       <template v-if="!user">
         <router-link class="nav-link" to="/login">Login</router-link>
       </template>
@@ -39,16 +42,69 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useAuthStore } from '../stores/auth'
 
+const props = defineProps({
+  dashboardMode: { type: Boolean, default: false },
+})
+
 const auth = useAuthStore()
+const isOpen = ref(false)
+const isHidden = ref(false)
+let lastScrollY = 0
+let scrollFrame
 const user = computed(() => auth.user)
 const isAdmin = computed(() => auth.user && auth.user.role === 'ADMIN')
-function logout(){ auth.logout(); window.location.href = '/login' }
+
+function updateDashboardVisibility() {
+  const currentScrollY = window.scrollY
+  if (currentScrollY <= 24) {
+    isHidden.value = false
+  } else if (currentScrollY > lastScrollY + 4) {
+    isHidden.value = true
+  } else if (currentScrollY < lastScrollY - 4) {
+    isHidden.value = false
+  }
+  lastScrollY = currentScrollY
+  scrollFrame = undefined
+}
+
+function handleDashboardScroll() {
+  if (scrollFrame === undefined) scrollFrame = requestAnimationFrame(updateDashboardVisibility)
+}
+
+function updateDashboardScrollMode(enabled) {
+  window.removeEventListener('scroll', handleDashboardScroll)
+  isHidden.value = false
+  lastScrollY = window.scrollY
+  if (enabled) window.addEventListener('scroll', handleDashboardScroll, { passive: true })
+}
+
+onMounted(() => updateDashboardScrollMode(props.dashboardMode))
+watch(() => props.dashboardMode, updateDashboardScrollMode)
+watch(
+  () => window.location.pathname,
+  () => {
+    isOpen.value = false
+    isHidden.value = false
+  },
+)
+onBeforeUnmount(() => {
+  window.removeEventListener('scroll', handleDashboardScroll)
+  cancelAnimationFrame(scrollFrame)
+})
+function logout() {
+  auth.logout()
+  window.location.href = '/login'
+}
 </script>
 
 <style scoped>
-.logo{letter-spacing:0.6px}
-.nav-link{display:block}
+.logo {
+  letter-spacing: 0.6px;
+}
+.nav-link {
+  display: block;
+}
 </style>

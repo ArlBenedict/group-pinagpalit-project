@@ -1,29 +1,41 @@
 <template>
   <AppLayout>
-    <div>
-      <div class="topbar"><h2 style="margin:0">My Payments</h2></div>
-
-      <div class="card">
-        <h3>Payment History</h3>
-        <table class="table">
-          <thead><tr><th>Date</th><th>Amount</th><th>Method</th><th>Status</th><th></th></tr></thead>
-          <tbody>
-            <tr v-for="p in payments" :key="p.id">
-              <td>{{ p.date }}</td>
-              <td>{{ p.amount }}</td>
-              <td>{{ p.method }}</td>
-              <td>{{ p.status }}</td>
-              <td><button class="btn ghost">Details</button></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
+    <main class="user-page detail-page">
+      <UserPageHeader
+        eyebrow="MEMBER SPACE / 03"
+        title="Your payments"
+        description="A transparent view of your membership payments and their current status."
+      />
+      <section v-if="payments.length" class="payment-list">
+        <article v-for="payment in payments" :key="payment.id" class="payment-row">
+          <div class="payment-icon">₱</div>
+          <div class="payment-main">
+            <strong>{{ formatAmount(payment) }}</strong
+            ><span>{{ payment.plan || 'Membership payment' }}</span>
+          </div>
+          <div class="payment-meta">
+            <span>{{ payment.date }}</span
+            ><span>{{ payment.method }}</span>
+          </div>
+          <span class="status-pill" :class="{ 'is-paid': payment.status === 'Paid' }">{{
+            payment.status
+          }}</span>
+        </article>
+      </section>
+      <section v-else class="premium-empty">
+        <h3>No payments yet.</h3>
+        <p class="section-copy">Your membership payments will appear here once recorded.</p>
+        <router-link to="/my-membership" class="text-link"
+          >View membership options <span>-></span></router-link
+        >
+      </section>
+    </main>
   </AppLayout>
 </template>
 
 <script setup>
 import AppLayout from '../components/AppLayout.vue'
+import UserPageHeader from '../components/UserPageHeader.vue'
 import { computed } from 'vue'
 import { formatPHP } from '../utils/currency'
 import { useAuthStore } from '../stores/auth'

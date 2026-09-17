@@ -1,4 +1,7 @@
 <script setup>
+import { applyStoredTheme } from './utils/theme'
+
+applyStoredTheme()
 </script>
 
 <template>
